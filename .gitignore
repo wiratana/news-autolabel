@@ -162,3 +162,6 @@ cython_debug/
 
 # vscode configuration
 .vscode
+
+# storage data
+storage/
