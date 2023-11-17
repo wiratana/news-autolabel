@@ -1,15 +1,52 @@
-# This is a sample Python script.
+import openai
+import os
+import time
+from dotenv import load_dotenv
+from mongoengine import connect, StringField, Document
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+load_dotenv()
 
+class Article(Document):
+    title = StringField()
+    author = StringField()
+    date_published = StringField()
+    content = StringField()
+    label = StringField()
 
-def core():
-    pass
+def app():
+    connect(
+        db=os.environ.get("DB_NAME"),
+        host=os.environ.get("DB_URI")
+    )
 
+    openai.api_key = os.environ.get("OPEN_API_KEY")
 
-# Press the green button in the gutter to run the script.
+    prompt = input("prompt : ")
+    formatted_prompt = "{prompt}\ntitle : {title}\ncontent : {content}"
+
+    for news in Article.objects():
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system",
+                    "content": formatted_prompt.format(
+                        prompt=prompt,
+                        title=news.title,
+                        content=news.content
+                    )
+                 }
+            ]
+        )
+
+        print("+\tnews : {title}\n\tlabel : {label}\n".format(
+            title=news.title,
+            label=response.choices[0].message.content))
+
+        news.label = response.choices[0].message.content
+        news.save()
+
+        time.sleep(30)
+
 if __name__ == '__main__':
-    core()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    app()
