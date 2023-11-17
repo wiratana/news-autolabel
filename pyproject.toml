@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "news-autolabel"
+version = "0.1.0"
+description = "news autolabel with the power of openai text generation"
+authors = ["wiratana <andikawiratana@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+mongoengine = "^0.27.0"
+openai = "^1.3.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
